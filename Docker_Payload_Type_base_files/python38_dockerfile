@@ -1,0 +1,14 @@
+From python:3.8-buster
+
+ARG CA_CERTIFICATE
+ARG NPM_REGISTRY
+ARG PYPI_INDEX
+ARG PYPI_INDEX_URL
+ARG DOCKER_REGSITRY_MIRROR
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+
+COPY ["requirements.txt", "/requirements.txt"]
+RUN pip install -r /requirements.txt
+
+ENTRYPOINT ["/Mythic/mythic/payload_service.sh"]

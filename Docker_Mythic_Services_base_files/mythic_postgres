@@ -1,0 +1,3 @@
+From postgres:13-alpine
+COPY postgres.conf /etc/postgresql/postgresql.conf
+ENV config_file=/etc/postgresql/postgresql.conf

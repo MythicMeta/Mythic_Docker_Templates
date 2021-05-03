@@ -1,0 +1,18 @@
+From python:3.8-buster
+
+ARG CA_CERTIFICATE
+ARG NPM_REGISTRY
+ARG PYPI_INDEX
+ARG PYPI_INDEX_URL
+ARG DOCKER_REGSITRY_MIRROR
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+
+COPY ["requirements.txt", "/requirements.txt"]
+RUN pip install -r /requirements.txt
+
+RUN apt-get update && apt-get install software-properties-common apt-utils git -y
+RUN git clone https://github.com/xorrior/CRX3-Creator.git /CRX3-Creator
+RUN cd /CRX3-Creator; pip install -r requirements.txt;
+
+ENTRYPOINT ["/Mythic/mythic/payload_service.sh"]
