@@ -3,3 +3,4 @@ aio-pika
 mythic-c2-container==0.0.22
 sanic
 requests
+aiohttp
