@@ -37,9 +37,6 @@ RUN \
     libtool libxml2-dev uuid-dev libssl-dev swig openjdk-8-jdk pkg-config patch          \
     make xz-utils cpio wget zip unzip p7zip git mercurial bzr texinfo help2man python3.8 python3.8-distutils python3-pip python3.8-dev         \
     --no-install-recommends
-RUN python3.8 -m pip install pip wheel setuptools
-COPY ["requirements.txt", "/requirements.txt"]
-RUN python3.8 -m pip install -r /requirements.txt
 
 # Fix any stock package issues
 RUN ln -s /usr/include/asm-generic /usr/include/asm
@@ -102,5 +99,9 @@ RUN go get github.com/google/shlex \
     golang.org/x/sync/semaphore \
     github.com/gorilla/websocket \
     github.com/djherbis/atime
+
+RUN python3.8 -m pip install pip wheel setuptools
+COPY ["requirements.txt", "/requirements.txt"]
+RUN python3.8 -m pip install -r /requirements.txt
 
 ENTRYPOINT ["/Mythic/mythic/payload_service.sh"]
