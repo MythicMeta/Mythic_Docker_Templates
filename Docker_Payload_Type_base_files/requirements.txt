@@ -2,4 +2,4 @@ dynaconf==3.1.4
 aio-pika
 pycrypto
 pycryptodome
-mythic-payloadtype-container==0.1.4
+mythic-payloadtype-container==0.1.7
