@@ -45,9 +45,17 @@ function extension {
     fi
   fi
 }
-
+# Detect if we are using go modules
+if [[ "$GO111MODULE" == "on" || "$GO111MODULE" == "auto" ]]; then
+  USEMODULES=true
+else
+  USEMODULES=false
+fi
 # Configure some global build parameters
 NAME=`basename $1/$PACK`
+# Support go module package
+PACK_RELPATH="./$PACK"
+
 if [ "$OUT" != "" ]; then
   NAME=$OUT
 fi
@@ -57,8 +65,11 @@ if [ "$FLAG_X" == "true" ];    then X=-x; fi
 if [ "$FLAG_RACE" == "true" ]; then R=-race; fi
 if [ "$FLAG_TAGS" != "" ];     then T=(--tags "$FLAG_TAGS"); fi
 if [ "$FLAG_LDFLAGS" != "" ];  then LD="$FLAG_LDFLAGS"; fi
+if [ "$FLAG_GCFLAGS" != "" ];  then GC="$FLAG_GCFLAGS"; fi
 
 if [ "$FLAG_BUILDMODE" != "" ] && [ "$FLAG_BUILDMODE" != "default" ]; then BM="--buildmode=$FLAG_BUILDMODE"; fi
+if [ "$FLAG_TRIMPATH" == "true" ]; then TP=-trimpath; fi
+if [ "$FLAG_MOD" != "" ]; then MOD="--mod=$FLAG_MOD"; fi
 
 # If no build targets were specified, inject a catch all wildcard
 if [ "$TARGETS" == "" ]; then
@@ -80,12 +91,11 @@ for TARGET in $TARGETS; do
 
   fi
 
-  # Check and build for OSX targets
   if [ $XGOOS == "." ] || [[ $XGOOS == darwin* ]]; then
     # Split the platform version and configure the deployment target
     PLATFORM=`echo $XGOOS | cut -d '-' -f 2`
     if [ "$PLATFORM" == "" ] || [ "$PLATFORM" == "." ] || [ "$PLATFORM" == "darwin" ]; then
-      PLATFORM=10.06 # OS X Snow Leopard
+      PLATFORM=10.12 # OS X Sierra (min version support for golang)
     fi
     export MACOSX_DEPLOYMENT_TARGET=$PLATFORM
 
@@ -98,8 +108,22 @@ for TARGET in $TARGETS; do
     if [ $XGOARCH == "." ] || [ $XGOARCH == "amd64" ]; then
       echo "Compiling for darwin-$PLATFORM/amd64..."
       #CC=o64-clang CXX=o64-clang++ HOST=x86_64-apple-darwin15 PREFIX=/usr/local $BUILD_DEPS /deps ${DEPS_ARGS[@]}
-      #CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$LDSTRIP $V $LD" -d ./$PACK
-      CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build $V $X "${T[@]}" --ldflags="$LDSTRIP $V $LD" $R $BM -o "/build/$NAME-darwin-$PLATFORM-amd64$R`extension darwin`" ./$PACK
+      if [[ "$USEMODULES" == false ]]; then
+        CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$LDSTRIP $V $LD" --gcflags="$GC" -d $PACK_RELPATH
+      fi
+      CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build $V $X $TP $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" --gcflags="$GC" $R $BM -o "/build/$NAME-darwin-$PLATFORM-amd64$R`extension darwin`" $PACK_RELPATH
+    fi
+    if [ $XGOARCH == "." ] || [ $XGOARCH == "arm64" ]; then
+      if [[ "$GO_VERSION" == 115* ]]; then
+        echo "Go version too low, skipping darwin-$PLATFORM/arm64..."
+      else
+        echo "Compiling for darwin-$PLATFORM/arm64..."
+        CC=o64-clang CXX=o64-clang++ HOST=arm64-apple-darwin15 PREFIX=/usr/local $BUILD_DEPS /deps ${DEPS_ARGS[@]}
+        if [[ "$USEMODULES" == false ]]; then
+          CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$LDSTRIP $V $LD" --gcflags="$GC" -d $PACK_RELPATH
+        fi
+        CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go build $V $X $TP $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" --gcflags="$GC" $R $BM -o "/build/$NAME-darwin-$PLATFORM-arm64$R`extension darwin`" $PACK_RELPATH
+      fi
     fi
     # Remove any automatically injected deployment target vars
     unset MACOSX_DEPLOYMENT_TARGET

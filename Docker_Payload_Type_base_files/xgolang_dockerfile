@@ -33,21 +33,27 @@ RUN \
   apt-get update && \
   apt-get install -y automake autogen build-essential ca-certificates cmake                   \
     gcc-5-aarch64-linux-gnu g++-5-aarch64-linux-gnu libc6-dev-arm64-cross                \
-    gcc-5-multilib g++-5-multilib clang llvm-dev             \
+    gcc-5-multilib g++-5-multilib  \
     libtool libxml2-dev uuid-dev libssl-dev swig openjdk-8-jdk pkg-config patch          \
     make xz-utils cpio wget zip unzip p7zip git mercurial bzr texinfo help2man python3.8 python3.8-distutils python3-pip python3.8-dev         \
-    --no-install-recommends
+    clang-9 clang-9++ llvm-dev libtool libxml2-dev uuid-dev libssl-dev swig openjdk-8-jdk pkg-config patch libssl1.1 openssl && \
+    update-ca-certificates && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+  find /var/log -type f | while read f; do echo -ne '' > $f; done;
 
 # Fix any stock package issues
 RUN ln -s /usr/include/asm-generic /usr/include/asm
+RUN ln -s /usr/bin/clang-9 /usr/bin/clang
+RUN ln -s /usr/bin/clang-9 /usr/bin/clang++
 
 ##########################
 # Darwin Toolchain build #
 ##########################
 
 # Configure the container for OSX cross compilation
-ENV OSX_SDK MacOSX10.11.sdk
-ENV OSX_SDK_PATH https://s3.dockerproject.org/darwin/v2/$OSX_SDK.tar.xz
+ENV OSX_SDK MacOSX11.1.sdk
+ENV OSX_SDK_PATH https://github.com/phracker/MacOSX-SDKs/releases/download/11.0-11.1/${OSX_SDK}.tar.xz
 
 # Make libxar known to the ld64 and cctools build
 ENV LD_LIBRARY_PATH=/osxcross/target/lib
@@ -55,7 +61,7 @@ ENV LD_LIBRARY_PATH=/osxcross/target/lib
 # Download the osx sdk and build the osx toolchain
 # We download the osx sdk, patch it and pack it again to be able to throw the patched version at osxcross
 RUN \
-  $FETCH $OSX_SDK_PATH dd228a335194e3392f1904ce49aff1b1da26ca62 && \
+  $FETCH $OSX_SDK_PATH 9b86eab03176c56bb526de30daa50fa819937c54b280364784ce431885341bf6 && \
   tar -xf `basename $OSX_SDK_PATH` && rm -f `basename $OSX_SDK_PATH`
 ADD patch.tar.xz $OSX_SDK/usr/include/c++
 RUN tar -cf - $OSX_SDK/ | xz -c - > $OSX_SDK.tar.xz && rm -rf $OSX_SDK
@@ -63,9 +69,10 @@ RUN tar -cf - $OSX_SDK/ | xz -c - > $OSX_SDK.tar.xz && rm -rf $OSX_SDK
 # Actually build the toolchain
 RUN \
   git clone https://github.com/tpoechtrager/osxcross.git && \
-  cd osxcross && git checkout 88cb6e8d0d7675cae7c8a2d66c11f58237101df0 && cd ../ && \
-  mv  $OSX_SDK.tar.xz /osxcross/tarballs/ && \
-  OSX_VERSION_MIN=10.10 UNATTENDED=1 LD_LIBRARY_PATH=/osxcross/target/lib /osxcross/build.sh
+#  cd osxcross && git checkout 0f87f567dfaf98460244471ad6c0f4311d62079c && cd ../ && \
+  mv $OSX_SDK.tar.xz /osxcross/tarballs/ && \
+  OSX_VERSION_MIN=10.12 UNATTENDED=1 LD_LIBRARY_PATH=/osxcross/target/lib /osxcross/build.sh
+
 ENV PATH /osxcross/target/bin:$PATH
 
 # Inject the new Go root distribution downloader and bootstrapper
@@ -78,27 +85,29 @@ ADD build.sh /build.sh
 ENV BUILD /build.sh
 RUN chmod +x $BUILD
 
-ENV GO_VERSION 11304
+ENV GO_VERSION 1178
 # Make libxar known to the ld64 and cctools build
 ENV LD_LIBRARY_PATH=/osxcross/target/lib
 
 RUN \
-  export ROOT_DIST=https://storage.googleapis.com/golang/go1.13.4.linux-amd64.tar.gz    && \
-  export ROOT_DIST_SHA=692d17071736f74be04a72a06dab9cac1cd759377bd85316e52b2227604c004c && \
+  export ROOT_DIST=https://go.dev/dl/go1.17.8.linux-amd64.tar.gz    && \
+  export ROOT_DIST_SHA=980e65a863377e69fd9b67df9d8395fd8e93858e7a24c9f55803421e453f4f99 && \
   \
   $BOOTSTRAP_PURE
 
 ENV GOROOT /usr/local/go
 ENV GOPATH /go/src:/go/src/poseidon
 
-RUN go get github.com/google/shlex \
-    github.com/kbinani/screenshot \
-    github.com/tmc/scp \
-    github.com/xorrior/keyctl \
-    golang.org/x/crypto/ssh \
-    golang.org/x/sync/semaphore \
-    github.com/gorilla/websocket \
-    github.com/djherbis/atime
+#RUN go install github.com/google/shlex@latest \
+#    github.com/kbinani/screenshot@latest \
+#    github.com/tmc/scp@latest \
+#    github.com/xorrior/keyctl@latest \
+#    golang.org/x/crypto/ssh@latest \
+#    golang.org/x/sync/semaphore@latest \
+#    github.com/gorilla/websocket@latest \
+#    github.com/djherbis/atime@latest \
+#    github.com/google/uuid@latest \
+#    golang.org/x/sys/unix@latest
 
 RUN python3.8 -m pip install pip wheel setuptools
 COPY ["requirements.txt", "/requirements.txt"]
