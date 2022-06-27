@@ -37,7 +37,7 @@ RUN \
     libtool libxml2-dev uuid-dev libssl-dev swig openjdk-8-jdk pkg-config patch          \
     make xz-utils cpio wget zip unzip p7zip git mercurial bzr texinfo help2man python3.8 python3.8-distutils python3-pip python3.8-dev         \
     clang-9 clang-9++ llvm-dev libtool libxml2-dev uuid-dev libssl-dev swig openjdk-8-jdk pkg-config patch libssl1.1 openssl && \
-    update-ca-certificates && \
+    update-ca-certificates gcc-mingw-w64 && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
   find /var/log -type f | while read f; do echo -ne '' > $f; done;
@@ -80,37 +80,24 @@ ADD bootstrap_pure.sh /bootstrap_pure.sh
 ENV BOOTSTRAP_PURE /bootstrap_pure.sh
 RUN chmod +x $BOOTSTRAP_PURE
 
-# Inject the container entry point, the build script
-ADD build.sh /build.sh
-ENV BUILD /build.sh
-RUN chmod +x $BUILD
-
 ENV GO_VERSION 1178
 # Make libxar known to the ld64 and cctools build
 ENV LD_LIBRARY_PATH=/osxcross/target/lib
+RUN apt-get update && apt-get -y install gcc-mingw-w64 
 
 RUN \
-  export ROOT_DIST=https://go.dev/dl/go1.17.8.linux-amd64.tar.gz    && \
-  export ROOT_DIST_SHA=980e65a863377e69fd9b67df9d8395fd8e93858e7a24c9f55803421e453f4f99 && \
+  export ROOT_DIST=https://go.dev/dl/go1.18.3.linux-amd64.tar.gz    && \
+  export ROOT_DIST_SHA=956f8507b302ab0bb747613695cdae10af99bbd39a90cae522b7c0302cc27245 && \
   \
   $BOOTSTRAP_PURE
 
 ENV GOROOT /usr/local/go
 ENV GOPATH /go/src:/go/src/poseidon
 
-#RUN go install github.com/google/shlex@latest \
-#    github.com/kbinani/screenshot@latest \
-#    github.com/tmc/scp@latest \
-#    github.com/xorrior/keyctl@latest \
-#    golang.org/x/crypto/ssh@latest \
-#    golang.org/x/sync/semaphore@latest \
-#    github.com/gorilla/websocket@latest \
-#    github.com/djherbis/atime@latest \
-#    github.com/google/uuid@latest \
-#    golang.org/x/sys/unix@latest
-
 RUN python3.8 -m pip install pip wheel setuptools
 COPY ["requirements.txt", "/requirements.txt"]
 RUN python3.8 -m pip install -r /requirements.txt
+
+RUN go install mvdan.cc/garble@21dfbd3379012d0c0aa3818ad156479de305a561
 
 ENTRYPOINT ["/Mythic/mythic/payload_service.sh"]

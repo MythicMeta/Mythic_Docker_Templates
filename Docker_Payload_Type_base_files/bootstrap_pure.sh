@@ -35,7 +35,5 @@ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 CC=o64-clang go install std
 echo "Bootstrapping darwin/arm64..."
 GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 CC=o64-clang go install std
 
-# Install xgo within the container to enable internal cross compilation
-echo "Installing xgo-in-xgo..."
-go install src.techknowlogick.com/xgo@latest
-ln -s /go/bin/xgo /usr/bin/xgo
+echo "Bootstrapping windows/amd64..."
+GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc go install std
