@@ -98,6 +98,6 @@ RUN python3.8 -m pip install pip wheel setuptools
 COPY ["requirements.txt", "/requirements.txt"]
 RUN python3.8 -m pip install -r /requirements.txt
 
-RUN go install mvdan.cc/garble@21dfbd3379012d0c0aa3818ad156479de305a561
+RUN go install mvdan.cc/garble@8d36e1d80e98b5ed0a1c1dde58d451b8cf6e020e
 
 ENTRYPOINT ["/Mythic/mythic/payload_service.sh"]
