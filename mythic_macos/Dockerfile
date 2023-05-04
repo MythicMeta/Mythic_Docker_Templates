@@ -1,4 +1,4 @@
-FROM mythic_base:latest
+FROM itsafeaturemythic/mythic_base:latest
 
 ARG CA_CERTIFICATE
 ARG NPM_REGISTRY
