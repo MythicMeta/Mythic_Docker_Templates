@@ -5,6 +5,8 @@ on:
     # update the branch to 'main' when Mythic 3.0.0 goes live
     branches:
       - 'v3.0.0'
+    tags:
+      - "v*.*.*"
 
 jobs:
   docker:
@@ -12,6 +14,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/mythic_base
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
 
       # setup Docker build action
       - name: Set up Docker Buildx
@@ -31,7 +46,8 @@ jobs:
           context: ./mythic_base/
           # Note: tags has to be all lower-case
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/mythic_base:latest 
+            ${{ steps.meta.outputs.tags }}
             ${{ secrets.DOCKERHUB_USERNAME }}/mythic_base:latest
+          labels: ${{ steps.meta.outputs.labels }}
           # build on feature branches, push only on main branch
           push: true
