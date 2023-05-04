@@ -25,7 +25,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build image and push to Docker Hub and GitHub Container Registry
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           # relative path to the place where source code with Dockerfile is located
           context: ./mythic_base/
@@ -34,4 +34,4 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/mythic_base:latest 
             ${{ secrets.DOCKERHUB_USERNAME }}/mythic_base:latest
           # build on feature branches, push only on main branch
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
