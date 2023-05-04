@@ -50,6 +50,7 @@ jobs:
           push: true
   docker-mythic_dotnet:
     runs-on: ubuntu-latest
+    needs: docker-mythic_base
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -92,6 +93,7 @@ jobs:
           push: true
   docker-mythic_macos:
     runs-on: ubuntu-latest
+    needs: docker-mythic_base
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

@@ -1,19 +1,5 @@
 FROM itsafeaturemythic/mythic_base:latest
 
-ARG CA_CERTIFICATE
-ARG NPM_REGISTRY
-ARG PYPI_INDEX
-ARG PYPI_INDEX_URL
-ARG DOCKER_REGISTRY_MIRROR
-ARG HTTP_PROXY
-ARG HTTPS_PROXY
-
-# install .net core
-RUN wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
-    dpkg -i packages-microsoft-prod.deb && \
-    rm packages-microsoft-prod.deb
-
-# install mono, protoc protobufs, and .net core 
 RUN apt-get -y update && \
     apt-get -y autoremove && \
     apt-get clean && \
