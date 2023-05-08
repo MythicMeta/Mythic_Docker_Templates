@@ -1,0 +1,12 @@
+FROM python:3.11-slim-buster
+
+ARG CA_CERTIFICATE
+ARG NPM_REGISTRY
+ARG PYPI_INDEX
+ARG PYPI_INDEX_URL
+ARG DOCKER_REGISTRY_MIRROR
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+
+COPY requirements.txt /
+RUN pip3 install -r /requirements.txt
