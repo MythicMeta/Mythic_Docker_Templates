@@ -1,4 +1,4 @@
-FROM python:3.11-slim-buster
+FROM python:3.11-buster
 
 ARG CA_CERTIFICATE
 ARG NPM_REGISTRY
