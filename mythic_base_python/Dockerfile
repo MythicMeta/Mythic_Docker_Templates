@@ -15,7 +15,7 @@ RUN apt-get -y update && \
       xz-utils tk-dev libffi-dev liblzma-dev libsqlite3-dev protobuf-compiler -y  && \
     apt-get purge -y && \
     rm -rf /var/lib/apt/lists/* && \
-    apt-get clean \
+    apt-get clean
 
 COPY requirements.txt /
 RUN pip3 install -r /requirements.txt
