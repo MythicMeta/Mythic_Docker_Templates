@@ -1,4 +1,4 @@
-FROM itsafeaturemythic/mythic_base_go:latest
+FROM itsafeaturemythic/mythic_go_base:latest
 
 RUN apt-get -y update && \
     apt-get -y autoremove && \

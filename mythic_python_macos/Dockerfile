@@ -1,4 +1,4 @@
-FROM itsafeaturemythic/mythic_base_python:latest
+FROM itsafeaturemythic/mythic_python_base:latest
 
 RUN apt-get -y update && \
     apt-get -y autoremove && \
