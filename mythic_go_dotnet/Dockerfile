@@ -27,3 +27,4 @@ COPY ["System.Management.Automation.dll-v4", "/Windows/Microsoft.NET/assembly/GA
 
 # update the path to include the path to the dotnet isntall since it's different than normal
 ENV PATH=/root/.dotnet:$PATH
+ENV DOTNET_ROOT=/root/.dotnet/
