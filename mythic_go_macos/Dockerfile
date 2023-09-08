@@ -12,9 +12,9 @@ RUN apt-get -y update && \
 RUN ln -s /usr/include/asm-generic /usr/include/asm
 
 RUN bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-RUN apt-get install --no-install-recommends clang-16 clang-16++ cmake -y
-RUN ln -s /usr/bin/clang-16 /usr/bin/clang
-RUN ln -s /usr/bin/clang++-16 /usr/bin/clang++
+RUN apt-get install --no-install-recommends clang-17 clang-17++ cmake -y
+RUN ln -s /usr/bin/clang-17 /usr/bin/clang
+RUN ln -s /usr/bin/clang++-17 /usr/bin/clang++
 ENV OSX_SDK 12.1
 RUN cd / && git clone --depth 1 https://github.com/tpoechtrager/osxcross.git && \
   cd osxcross && curl -fsSL -O https://github.com/joseluisq/macosx-sdks/releases/download/${OSX_SDK}/MacOSX${OSX_SDK}.sdk.tar.xz && \
