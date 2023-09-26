@@ -1,4 +1,4 @@
-FROM python:3.11-buster
+FROM python:3.11-slim-bookworm as base
 
 ARG CA_CERTIFICATE
 ARG NPM_REGISTRY
@@ -7,6 +7,8 @@ ARG PYPI_INDEX_URL
 ARG DOCKER_REGISTRY_MIRROR
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
+
+FROM base as builder
 
 RUN apt-get -y update && \
     apt-get -y upgrade && \
@@ -18,5 +20,8 @@ RUN apt-get -y update && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean
 
-COPY requirements.txt /
-RUN pip3 install -r /requirements.txt
+RUN pip3 install mythic-container==0.2.11-rc07 pycryptodome
+
+FROM base
+
+COPY --from=builder /usr/local/lib/python3.11/ /usr/local/lib/python3.11/
