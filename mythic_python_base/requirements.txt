@@ -6,4 +6,4 @@ psutil==5.9.4
 grpcio
 grpcio-tools
 pycryptodome
-mythic-container==0.4.8
+mythic-container==0.4.9
