@@ -1,4 +1,4 @@
-FROM golang:1.21-bullseye
+FROM golang:1.22-bullseye
 
 ARG CA_CERTIFICATE
 ARG NPM_REGISTRY
