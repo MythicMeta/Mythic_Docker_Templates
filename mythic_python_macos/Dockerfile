@@ -18,7 +18,7 @@ RUN ln -s /usr/bin/clang++-18 /usr/bin/clang++
 ENV OSX_SDK 12.1
 RUN cd / && git clone --depth 1 https://github.com/tpoechtrager/osxcross.git && \
   cd osxcross && curl -fsSL -O https://github.com/joseluisq/macosx-sdks/releases/download/${OSX_SDK}/MacOSX${OSX_SDK}.sdk.tar.xz && \
-  mv MacOSX${OSX_SDK}.sdk.tar.xz tarballs/ && UNATTENDED=yes ./build.sh && rm -rf  /build/osxcross/tarballs/
+  mv MacOSX${OSX_SDK}.sdk.tar.xz tarballs/ && UNATTENDED=yes OSX_VERSION_MIN=11 ./build.sh && rm -rf  /build/osxcross/tarballs/
 
 ENV PATH /osxcross/target/bin:$PATH
 ENV LD_LIBRARY_PATH=/osxcross/target/lib
