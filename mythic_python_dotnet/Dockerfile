@@ -1,5 +1,5 @@
-FROM itsafeaturemythic/mythic_python_base:latest
-
+#FROM itsafeaturemythic/mythic_python_base:latest
+FROM mythic_python_base
 # install .net core
 RUN wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
     dpkg -i packages-microsoft-prod.deb && \
@@ -11,7 +11,7 @@ RUN apt-get -y update && \
     apt-get clean && \
     apt install --no-install-recommends -y apt-transport-https dirmngr gnupg ca-certificates && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
-    echo "deb https://download.mono-project.com/repo/debian stable-bullseye main" | tee /etc/apt/sources.list.d/mono-official-stable.list && \
+    echo "deb https://download.mono-project.com/repo/debian stable-buster main" | tee /etc/apt/sources.list.d/mono-official-stable.list && \
     apt update && apt-get install --no-install-recommends nuget \
     libreadline-dev llvm libncurses5-dev libncursesw5-dev mono-complete gcc-mingw-w64  -y && \
     wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && \
