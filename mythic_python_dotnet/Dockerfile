@@ -1,5 +1,5 @@
-#FROM itsafeaturemythic/mythic_python_base:latest
-FROM mythic_python_base
+FROM itsafeaturemythic/mythic_python_base:latest
+
 # install .net core
 RUN wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
     dpkg -i packages-microsoft-prod.deb && \
