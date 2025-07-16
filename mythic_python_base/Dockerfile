@@ -1,4 +1,4 @@
-FROM python:3.11-buster
+FROM python:3.11-bullseye
 
 ARG CA_CERTIFICATE
 ARG NPM_REGISTRY
