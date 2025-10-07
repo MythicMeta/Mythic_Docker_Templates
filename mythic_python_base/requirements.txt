@@ -1,2 +1,2 @@
 pycryptodome
-mythic-container==0.5.32
+mythic-container==0.6.0
