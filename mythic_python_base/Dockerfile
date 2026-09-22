@@ -1,4 +1,4 @@
-FROM python:3.11-trixie
+FROM python:3.11-bookworm
 
 ARG CA_CERTIFICATE
 ARG NPM_REGISTRY
