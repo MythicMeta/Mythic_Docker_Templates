@@ -1,4 +1,4 @@
-FROM python:3.11-bullseye
+FROM python:3.11-trixie
 
 ARG CA_CERTIFICATE
 ARG NPM_REGISTRY
@@ -11,7 +11,7 @@ ARG HTTPS_PROXY
 RUN apt-get -y update && \
     apt-get -y upgrade && \
     apt-get install --no-install-recommends \
-      software-properties-common apt-utils make build-essential libssl-dev zlib1g-dev libbz2-dev \
+      apt-utils make build-essential libssl-dev zlib1g-dev libbz2-dev \
       xz-utils tk-dev libffi-dev liblzma-dev libsqlite3-dev protobuf-compiler \
       binutils-aarch64-linux-gnu libc-dev-arm64-cross -y  && \
     apt-get purge -y && \
