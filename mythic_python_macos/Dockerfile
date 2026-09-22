@@ -3,7 +3,7 @@ FROM itsafeaturemythic/mythic_python_base:latest
 RUN apt-get -y update && \
     apt-get -y autoremove && \
     apt-get clean && \
-    apt-get install --no-install-recommends lsb-release llvm libncurses5-dev libncursesw5-dev gcc-mingw-w64 -y && \
+    apt-get install --no-install-recommends software-properties-common lsb-release llvm libncurses5-dev libncursesw5-dev gcc-mingw-w64 -y && \
     rm -rf /var/lib/apt/lists/*
 
 #
